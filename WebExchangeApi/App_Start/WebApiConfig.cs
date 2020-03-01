@@ -9,6 +9,9 @@ namespace WebExchangeApi
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            // Ignore favicon route
+            config.Routes.IgnoreRoute("favicon_ignore", "favicon.ico");
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "{email}",
