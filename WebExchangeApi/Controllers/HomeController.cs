@@ -13,30 +13,33 @@ namespace WebExchangeApi.Controllers
         }
 
         // GET: /email@gmail.com
-        public DistributionListModel Get(string email)
-        {
-            var response = new DistributionListModel
-            {
-                Email = email,
-                ChildEmailList = ExpandDistributionLists(11)
-            };
-
-            return response;
-        }
-
-        private IList<DistributionListModel> ExpandDistributionLists(int loopCount)
+        public IList<DistributionListModel> Get(string email)
         {
             IList<DistributionListModel> distributionList = new List<DistributionListModel>();
+            ExpandDistributionLists(10, email, distributionList);
 
+            return distributionList;
+        }
+
+        private IList<DistributionListModel> ExpandDistributionLists(int loopCount, string emailOf, IList<DistributionListModel> distributionList)
+        {
             for (int i = 1; i < loopCount; i++)
             {
-                var newDistribution = new DistributionListModel { Email = string.Format($"Email - {i}") };
                 if (i % 3 == 0)
                 {
-                    newDistribution.ChildEmailList = ExpandDistributionLists(3);
+                    ExpandDistributionLists(3, string.Format($"Email - {i}"), distributionList);
+                }
+                else
+                {
+                    var newDistribution = new DistributionListModel
+                    {
+                        Email = string.Format($"Email - {i}"),
+                        ChildrenOf = emailOf
+                    };
+
+                    distributionList.Add(newDistribution);
                 }
 
-                distributionList.Add(newDistribution);
             }
 
             return distributionList;
