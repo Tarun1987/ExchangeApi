@@ -1,4 +1,7 @@
-/.vs
-packages
-WebExchangeApi/bin
-WebExchangeApi/obj
+/Asp.NetMvc4.5/.vs
+/Asp.NetMvc4.5/packages
+/Asp.NetMvc4.5/WebExchangeApi/bin
+/Asp.NetMvc4.5/WebExchangeApi/obj
+/AspNetCore2.1/.vs
+/AspNetCore2.1/ExchangeApi/bin
+/AspNetCore2.1/ExchangeApi/obj
