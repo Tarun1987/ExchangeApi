@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using WebExchangeApi.Helpers;
 using WebExchangeApi.Models;
 
 namespace WebExchangeApi.Controllers
@@ -15,10 +17,22 @@ namespace WebExchangeApi.Controllers
         // GET: /email@gmail.com
         public IList<DistributionListModel> Get(string email)
         {
-            IList<DistributionListModel> distributionList = new List<DistributionListModel>();
-            ExpandDistributionLists(10, email, distributionList);
 
+            var maxRetryAttempts = 8;
+            var pauseBetweenFailures = TimeSpan.FromSeconds(2);
+
+            Console.WriteLine("Starting application.. ");
+            IList<DistributionListModel> distributionList = null;
+
+            RetryHelper.RetryOnException(maxRetryAttempts, pauseBetweenFailures, () =>
+            {
+                distributionList = new List<DistributionListModel>();
+                ExpandDistributionLists(10, email, distributionList);
+            });
+
+            Console.WriteLine("Ending application.. ");
             return distributionList;
+
         }
 
         private IList<DistributionListModel> ExpandDistributionLists(int loopCount, string emailOf, IList<DistributionListModel> distributionList)
