@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Web.Http;
 using WebExchangeApi.Helpers;
 using WebExchangeApi.Models;
+using System.Linq;
+using System.Configuration;
 
 namespace WebExchangeApi.Controllers
 {
@@ -15,8 +17,15 @@ namespace WebExchangeApi.Controllers
         }
 
         // GET: /email@gmail.com
-        public IList<DistributionListModel> Get(string email)
+        public IHttpActionResult Get(string email)
         {
+            IEnumerable<string> list;
+            if (!Request.Headers.TryGetValues("x-token", out list))
+                return BadRequest("Un-authorized.");
+
+            var token = list.FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(token) || EncryptionDecryptionHelper.Decrypt(token) != ConfigurationManager.AppSettings["matchingKey"])
+                return BadRequest("Un-authorized.");
 
             var maxRetryAttempts = 8;
             var pauseBetweenFailures = TimeSpan.FromSeconds(2);
@@ -31,7 +40,7 @@ namespace WebExchangeApi.Controllers
             });
 
             Console.WriteLine("Ending application.. ");
-            return distributionList;
+            return Ok(distributionList);
 
         }
 
@@ -58,30 +67,13 @@ namespace WebExchangeApi.Controllers
 
             return distributionList;
         }
+
+
+        // GET: /string
+        public string GetToken(string inputStr)
+        {
+            return EncryptionDecryptionHelper.Encrypt(inputStr);
+        }
     }
 
-
-
-
-    //private static void ExpandDistributionLists(ExchangeService service, string Mailbox)
-    //{
-    //    // Return the expanded group.
-    //    ExpandGroupResults myGroupMembers = service.ExpandGroup(Mailbox);
-    //    // Display the group members.
-    //    foreach (EmailAddress address in myGroupMembers.Members)
-    //    {
-    //        // Check to see if the mailbox is a public group
-    //        if (address.MailboxType == MailboxType.PublicGroup)
-    //        {
-    //            // Call the function again to expand the contained
-    //            // distribution group.
-    //            ExpandDistributionLists(service, address.Address);
-    //        }
-    //        else
-    //        {
-    //            // Output the address of the mailbox.
-    //            Console.WriteLine("Email Address: {0}", address);
-    //        }
-    //    }
-    //}
 }

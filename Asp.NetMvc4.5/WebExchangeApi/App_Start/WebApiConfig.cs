@@ -13,6 +13,12 @@ namespace WebExchangeApi
             config.Routes.IgnoreRoute("favicon_ignore", "favicon.ico");
 
             config.Routes.MapHttpRoute(
+               name: "TokenApi",
+               routeTemplate: "GetToken/{inputStr}",
+               defaults: new { controller = "Home", action = "GetToken", email = RouteParameter.Optional }
+           );
+
+            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "{email}",
                 defaults: new { controller = "Home", email = RouteParameter.Optional }
